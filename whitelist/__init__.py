@@ -22,42 +22,56 @@ class Whitelist(AppConfig):
             Command(command='on', namespace='wl', target=self.activate, perms='whitelist:admin', admin=True, description='Activate the local whitelist.'),
             Command(command='off', namespace='wl', target=self.deactivate, perms='whitelist:admin', admin=True, description='Deactivate the local whitelist.'),
             Command(command='help', namespace='wl', target=self.show_commands, perms='whitelist:admin', admin=True, description='Show available whitelist commands in the chat.'),
+            Command(command='status', namespace='wl', target=self.get_status, perms='whitelist:admin', admin=True, description='Show the status of the whitelist(on or off) in the chat'),
         )
         self.context.signals.listen(mp_signals.player.player_connect, self.player_connect)
        
 
-    async def player_connect(self, player, is_spectator, source, signal):
+    async def player_connect(self, player, *args, **kwargs):
         if self.active:
             if player.level == 0:
                 if self.whitelist != []:
                     if player not in self.whitelist:
-                        await self.instance.gbx('Kick', player.login)
+                        await self.instance.gbx('Kick', player.login, 'You are not in the whitelist')
                         await self.instance.chat(f'{player.nickname} $ff0is not whitelisted!')
                     else:
                         await self.instance.chat(f'{player.nickname} $ff0is whitelisted!')
             else:
                 await self.instance.chat(f'{player.nickname} $ff0is whitelisted!')
 
-    async def activate(self, player, data = None, **kwargs):
+    async def activate(self, player, **kwargs):
         if(self.active):
             await self.instance.chat('$f00Whitelist already activated!', player.login)
         else:
             self.active = True
             await self.instance.chat('$ff0Whitelist Activated')
+            for player_online in self.instance.player_manager.online:
+                if player_online not in self.whitelist and player_online.level == 0:
+                    await self.instance.gbx('Kick', player_online.login, 'You are not in the whitelist')
     
-    async def deactivate(self, player, data = None, **kwargs):
+    async def deactivate(self, player, **kwargs):
         if(not self.active):
             await self.instance.chat('$f00Whitelist already deactivated!', player.login)
         else:
             self.active = False
             await self.instance.chat('$ff0Whitelist Deactivated')
-    
-    async def find_player_by_login_or_nickname(self, player_login_or_nickname, player):
+
+    async def get_status(self, player, **kwargs):
+        if(self.active):
+            await self.instance.chat('Whitelist is $0C0activated', player.login)
+        else:
+            await self.instance.chat('Whitelist is $f00not activated', player.login)
+
+    async def find_player_by_login_or_nickname(self, player_login_or_nickname):
         player_found = [p for p in self.instance.player_manager.online if p.nickname == player_login_or_nickname or p.login == player_login_or_nickname]
+        return player_found
+    
+    async def find_player_by_login_or_nickname_in_wl(self, player_login_or_nickname):
+        player_found = [p for p in self.whitelist if p.nickname == player_login_or_nickname or p.login == player_login_or_nickname]
         return player_found
 
     async def add_player(self, player, data = None, **kwargs):
-        player_found = await self.find_player_by_login_or_nickname(data.player, player)
+        player_found = await self.find_player_by_login_or_nickname(data.player)
         if not len(player_found) == 1:
             await self.instance.chat(f'{data.player} $f00is not found!', player.login)
         else:
@@ -68,40 +82,37 @@ class Whitelist(AppConfig):
                 await self.instance.chat(f'{player_found[0].nickname} $f00is already whitelisted locally!', player.login)
 
     async def remove_player(self, player, data = None, **kwargs):
-        player_found = await self.find_player_by_login_or_nickname(data.player, player)
+        player_found = await self.find_player_by_login_or_nickname_in_wl(data.player)
         if not len(player_found) == 1:
-            await self.instance.chat(f'{data.player} $f00is not found!', player.login)
+            await self.instance.chat(f'{data.player} $f00is not on local Whitelist, cannot be removed!', player.login) 
         else:
-            if player_found[0] in self.whitelist:
-                self.whitelist.remove(player_found[0])
-                await self.instance.chat(f'{player_found[0].nickname} $0C0removed from the local whitelist!')
-            else:
-                await self.instance.chat(f'{player_found[0].nickname} $f00is not on local Whitelist, cannot be removed!', player.login)
+            self.whitelist.remove(player_found[0])
+            await self.instance.chat(f'{data.player} $0C0removed from the local whitelist!')
 
-    async def add_current_players(self, player, data = None, **kwargs): 
+    async def add_current_players(self, **kwargs): 
         self.whitelist = []
         for player_online in self.instance.player_manager.online:
             if player_online not in self.whitelist:
                 self.whitelist.append(player_online)
-            await self.instance.chat('$ff0Local Whitelist with current Players and Spectators created!')
+        await self.instance.chat('$ff0Local Whitelist with current Players and Spectators created!')
 
-    async def show(self, player, data = None, **kwargs):
+    async def show(self, player, **kwargs):
         whitelist_as_string = ""
         if self.whitelist == []:
             await self.instance.chat('$f00There is players in the local whitelist!', player.login)
         else:
-            for i, player in enumerate(self.whitelist):
+            for i, player_in_wl in enumerate(self.whitelist):
                 if i == len(self.whitelist) - 1:
-                    whitelist_as_string += f'{player.nickname}'
+                    whitelist_as_string += f'{player_in_wl.nickname}'
                 else:
-                    whitelist_as_string += f'{player.nickname}, '
+                    whitelist_as_string += f'{player_in_wl.nickname}, '
             await self.instance.chat(f'$ff0Players in the local whitelist: $fff{whitelist_as_string}', player.login)
 
-    async def clear(self, player, data = None, **kwargs):
+    async def clear(self, **kwargs):
         self.whitelist = []
-        await self.instance.chat('$0C0Local whitelist cleared!', player.login)
+        await self.instance.chat('$0C0Local whitelist cleared!')
 
-    async def show_commands(self, player, data = None, **kwargs):
+    async def show_commands(self, player, **kwargs):
         commands_string = ""
         commands = ['//wl add $iplayer$z$s | ','//wl remove $iplayer$z$s | ', '//wl current | ', '//wl clear | ', '//wl show | ', '//wl on | ', '//wl off | ', '//wl help']
         await self.instance.chat(commands_string.join(commands), player.login)
