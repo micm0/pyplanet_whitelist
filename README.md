@@ -2,7 +2,7 @@
 PyPlanet app that offers a Whitelist, which only lets certain people join
 
 ### Behavior:
-When a player join the server, if the whitelist is activated and the player is not in the whitelist, he will be kicked from the server
+When a player join the server, if the whitelist is activated and the player is not in the whitelist, he will be kicked from the server  
 Players with admins roles are automatically whitelisted
 
 ### Commands :  
