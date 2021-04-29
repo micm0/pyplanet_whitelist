@@ -35,6 +35,8 @@ class Whitelist(AppConfig):
                         await self.instance.chat(f'{player.nickname} $ff0is not whitelisted!')
                     else:
                         await self.instance.chat(f'{player.nickname} $ff0is whitelisted!')
+            else:
+                await self.instance.chat(f'{player.nickname} $ff0is whitelisted!')
 
     async def activate(self, player, data = None, **kwargs):
         if(self.active):
@@ -78,9 +80,9 @@ class Whitelist(AppConfig):
 
     async def add_current_players(self, player, data = None, **kwargs): 
         self.whitelist = []
-        for player in self.instance.player_manager.online:
-            if player not in self.whitelist:
-                self.whitelist.append(player)
+        for player_online in self.instance.player_manager.online:
+            if player_online not in self.whitelist:
+                self.whitelist.append(player_online)
             await self.instance.chat('$ff0Local Whitelist with current Players and Spectators created!')
 
     async def show(self, player, data = None, **kwargs):
