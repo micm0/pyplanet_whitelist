@@ -138,11 +138,11 @@ class WhiteListView(ManualListView):
         )
         if not cancel:
             self.app.whitelist.remove(data['login'])
+            await self.display(player=player)
             if self.app.active:
                 target_player = await self.app.instance.player_manager.get_player(login=data['login'], lock=False)
                 if target_player.level == 0:
                     await self.app.instance.gbx('Kick', target_player.login, 'You are not in the whitelist')
-            await self.display(player=player)
     
     async def action_new_players(self, player, values, **kwargs):
         if self.child:
