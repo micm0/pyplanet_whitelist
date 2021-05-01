@@ -100,15 +100,18 @@ class Whitelist(AppConfig):
             await self.instance.chat(f'{data.player_login} $f00is already whitelisted locally!', player.login)
 
     async def add_players_from_view(self, player, logins, **kwargs):
+        # Remove whitespaces and break lines 
         logins = logins.replace(' ', '')
+        logins = logins.replace('\n', '')
+
         logins_list = logins.split(",")
+        nbr = 0
         for login in logins_list:
-            if login != "":
-                if login not in self.whitelist:
+            if login != "" and login not in self.whitelist:
                     self.whitelist.append(login)
-                    await self.instance.chat(f'{login} $0C0added to the local whitelist!')
-                else:
-                    await self.instance.chat(f'{login} $f00is already whitelisted locally!', player.login)
+                    nbr += 1
+        await self.instance.chat(f'{player.nickname} $0C0added {nbr} logins to the local whitelist!')
+
 
     async def remove_player_login(self, player, data = None, **kwargs):
         if data.player not in self.whitelist:

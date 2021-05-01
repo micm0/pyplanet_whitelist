@@ -13,7 +13,10 @@
     <entry pos="0 -5" size="75 4" name="player_login" id="player_login"
            textsize="1.2" scriptevents="1" focusareacolor1="0003" focusareacolor2="FFF2" />
     
-    <label pos="0 -10" size="100 5" text="$fffSeparate with commas the logins for multiple logins" textsize="1" valign="top" />
+    <label pos="0 -12" size="100 5" text="$fff Separate with commas the logins for multiple logins" textsize="1.5" valign="top" />
+    <label pos="0 -20" size="100 5" text="$fff$i The input accept a maxmimum of 1024 characters(around 44 logins for TM2020)." textsize="0.5" valign="top" />
+    <label pos="0 -25" size="100 5" text="$fff$iThe window will crash if you exceed the limit" textsize="0.5" valign="top" />
+    <label pos="0 -30" size="100 5" text="$fff$iIf the window crashed(is stuck) please rejoin the server" textsize="0.5" valign="top" />
 
     <label pos="30 -100" style="CardButtonMedium" valign="center" halign="center"
            text="Save" translate="1" action="{{ id }}__button_save"

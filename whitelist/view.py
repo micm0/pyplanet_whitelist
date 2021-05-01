@@ -30,7 +30,7 @@ class WhiteListView(ManualListView):
             {
                 'name': 'Login',
                 'index': 'login',
-                'sorting': True,
+                'sorting': False,
                 'searching': True,
                 'width': 90,
                 'type': 'label',
@@ -38,7 +38,7 @@ class WhiteListView(ManualListView):
             {
                 'name': 'Nickname',
                 'index': 'nickname',
-                'sorting': True,
+                'sorting': False,
                 'searching': True,
                 'width': 90,
                 'type': 'label',
@@ -90,7 +90,7 @@ class WhiteListView(ManualListView):
                 require_confirm=False,
             )
         ]
-    
+
     async def get_data(self):
         items = []
         for player_login in self.whitelist:
@@ -104,12 +104,14 @@ class WhiteListView(ManualListView):
                 items.append({
                     'login': player_login,
                     'nickname': 'Unknown',
-                })            
+                })
+        # Sort by nickname
+        items.sort(key=lambda x: x['nickname'].lower())
+        
         return items
     
     async def action_current(self, player, values, **kwargs):
         await self.app.add_current_players()
-        await self.get_data()
         await self.close(player=player)
     
     async def action_clear(self, player, values, **kwargs):
