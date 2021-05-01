@@ -2,22 +2,28 @@
 
 PyPlanet app that offers a Whitelist, which only lets certain people join
 
+![alt text](https://i.imgur.com/9DNapFd.jpg)
+
 ### Behavior:
 
-When a player join the server, if the whitelist is activated and the player is not in the whitelist, he will be kicked from the server  
-When an admin activate the whitelist, all players not in the whitelist and without an admin role will be kicked  
-Players with admin roles are automatically whitelisted
+- When a player join the server, if the whitelist is activated and the player is not in the whitelist, he will be kicked from the server  
+- When an admin activate the whitelist, all players not in the whitelist will be kicked  
+- If the whitelist is already activated, if you remove a player from the whitelist he will be kicked, if you clear everyone will be kicked.  
+! Players with admin roles are considered whitelisted even if they are not in the whitelist !  
 
-### Commands :
+### Commands(if you prefer to use commands) :
 
+`//whitelist` Show the whitelist window.  
 `//wl help` Show available whitelist commands in the chat.  
 `//wl add` _Parameter: player login or nickname._   
-    Add a player to the local whitelist with his login or nickname(player need to be connected to the server).  
+    Add a player(connected to the server) to the local whitelist with his login or nickname.  
+`//wl addlogin` _Parameter: player login._   
+    Add a player login to the local whitelist.  
 `//wl remove` _Parameter: player login or nickname._  
-    Remove a player from the local whitelist with his login or nickname.  
+    Remove a player login from the local whitelist.  
 `//wl current` Create a new the local whitelist with all current connected players.  
 `//wl clear` Clear the local whitelist.  
-`//wl show` Show the players from the local whitelist in the chat.  
+`//wl show` Show the player logins from the local whitelist in the chat.  
 `//wl on` Activate the local whitelist.  
 `//wl off` Deactivate the local whitelist.  
 `//wl status` Show the status of the whitelist(on or off) in the chat.
