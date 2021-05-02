@@ -133,7 +133,7 @@ class Whitelist(AppConfig):
     async def show(self, player, **kwargs):
         whitelist_as_string = ""
         if self.whitelist == []:
-            await self.instance.chat('$f00There is players in the local whitelist!', player.login)
+            await self.instance.chat('$f00There is no players in the local whitelist!', player.login)
         else:
             for i, player_in_wl in enumerate(self.whitelist):
                 if i == len(self.whitelist) - 1:

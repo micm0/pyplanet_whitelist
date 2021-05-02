@@ -33,7 +33,9 @@ Working on Trackmania2020 and Trackmania²
 `//wl off` Deactivate the local whitelist.  
 `//wl status` Show the status of the whitelist(on or off) in the chat.
 
-The whitelist is saved only locally at the moment so it will be removed at the restart of pyplanet.  
+### Other:
+
+The whitelist is saved only in memory at the moment so it will be removed at the restart of pyplanet.  
 Save in database coming soon
 
 ### Known bugs:
