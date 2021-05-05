@@ -24,7 +24,7 @@ Working on Trackmania2020 and Trackmania²
  Add a player(connected to the server) to the local whitelist with his login or nickname.  
 `//wl addlogin` _Parameter: player login._  
  Add a player login to the local whitelist.  
-`//wl remove` _Parameter: player login or nickname._  
+`//wl remove` _Parameter: player login._  
  Remove a player login from the local whitelist.  
 `//wl current` Create a new the local whitelist with all current connected players.  
 `//wl clear` Clear the local whitelist.  
@@ -35,10 +35,11 @@ Working on Trackmania2020 and Trackmania²
 
 ### Other:
 
-The whitelist is saved only in memory at the moment so it will be removed at the restart of pyplanet.  
-Save in database coming soon
+~~The whitelist is saved only in memory at the moment so it will be removed at the restart of pyplanet.  
+Save in database coming soon~~  
+The WhiteList and its status are now persisted in the database
 
-### Known bugs:
+### Known bug(s):
 
 - The input of a manialink accept a maximum of 1024 characters(Nadeo limitation I guess) and there's no attribute to limit the number of characters.
   The manialink crash when we exceed the limit

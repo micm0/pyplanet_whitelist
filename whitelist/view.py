@@ -93,16 +93,16 @@ class WhiteListView(ManualListView):
 
     async def get_data(self):
         items = []
-        for player_login in self.whitelist:
+        for player_in_wl in self.whitelist:
             try:
-                target_player = await self.app.instance.player_manager.get_player(login=player_login,lock=False)
+                target_player = await self.app.instance.player_manager.get_player(login=player_in_wl.login,lock=False)
                 items.append({
-                    'login': player_login,
+                    'login': player_in_wl.login,
                     'nickname': target_player.nickname,
                 })
             except PlayerNotFound:
                 items.append({
-                    'login': player_login,
+                    'login': player_in_wl.login,
                     'nickname': 'Unknown',
                 })
         # Sort by nickname
@@ -112,7 +112,7 @@ class WhiteListView(ManualListView):
     
     async def action_current(self, player, values, **kwargs):
         await self.app.add_current_players()
-        await self.close(player=player)
+        await self.app.show_whitelist_window(player)
     
     async def action_clear(self, player, values, **kwargs):
         cancel = bool(
@@ -120,7 +120,7 @@ class WhiteListView(ManualListView):
         )
         if not cancel:
             await self.app.clear(player)
-            await self.close(player=player)
+            await self.app.show_whitelist_window(player)
 
     async def action_activate(self, player, values, **kwargs):
         cancel = bool(
@@ -139,12 +139,8 @@ class WhiteListView(ManualListView):
             await ask_confirmation(player, 'Do you really want to delete this player {} | {}? If the whitelist is active, it will kick the player if he don\'t have an admin role'.format(data['login'], data['nickname']))
         )
         if not cancel:
-            self.app.whitelist.remove(data['login'])
-            await self.display(player=player)
-            if self.app.active:
-                target_player = await self.app.instance.player_manager.get_player(login=data['login'], lock=False)
-                if target_player.level == 0:
-                    await self.app.instance.gbx('Kick', target_player.login, 'You are not in the whitelist')
+            await self.app.remove_player_from_view(player, data['login'])
+            await self.app.show_whitelist_window(player)
     
     async def action_new_players(self, player, values, **kwargs):
         if self.child:
@@ -154,7 +150,7 @@ class WhiteListView(ManualListView):
         await self.child.display()
         await self.child.wait_for_response()
         await self.child.destroy()
-        await self.display(player)  # refresh.
+        await self.app.show_whitelist_window(player)
         self.child = None
 
 class WhiteListWidget(TemplateView):
