@@ -5,19 +5,19 @@ from pyplanet.views import TemplateView
 from pyplanet.views.generics.alert import show_alert, ask_confirmation
 from pyplanet.contrib.player.exceptions import PlayerNotFound
 
+
 class WhiteListView(ManualListView):
     title = 'Whitelist'
     icon_style = 'Icons128x128_1'
     icon_substyle = 'ChallengeAuthor'
 
-    def __init__(self, app, whitelist):
+    def __init__(self, app):
         """
         Initiate the Whitelist List View
         """
         super().__init__(self)
         self.app = app
         self.fields = self._create_fields()
-        self.whitelist = whitelist
         self.manager = app.context.ui
         self.actions = self._create_actions()
         self.child = None
@@ -44,7 +44,7 @@ class WhiteListView(ManualListView):
                 'type': 'label',
             },
         ]
-    
+
     async def get_buttons(self):
         buttons = [
             {
@@ -76,7 +76,7 @@ class WhiteListView(ManualListView):
                 'action': self.action_activate
             },)
         return buttons
-    
+
     def _create_actions(self):
         return [
             dict(
@@ -93,7 +93,7 @@ class WhiteListView(ManualListView):
 
     async def get_data(self):
         items = []
-        for player_in_wl in self.whitelist:
+        for player_in_wl in self.app.whitelist:
             try:
                 target_player = await self.app.instance.player_manager.get_player(login=player_in_wl.login,lock=False)
                 items.append({
@@ -107,13 +107,13 @@ class WhiteListView(ManualListView):
                 })
         # Sort by nickname
         items.sort(key=lambda x: x['nickname'].lower())
-        
+
         return items
-    
+
     async def action_current(self, player, values, **kwargs):
         await self.app.add_current_players()
         await self.app.show_whitelist_window(player)
-    
+
     async def action_clear(self, player, values, **kwargs):
         cancel = bool(
             await ask_confirmation(player, 'Do you really want to clear the whitelist ? If the whitelist is active, it will kick all the players without an admin role')
@@ -141,7 +141,7 @@ class WhiteListView(ManualListView):
         if not cancel:
             await self.app.remove_player_from_view(player, data['login'])
             await self.app.show_whitelist_window(player)
-    
+
     async def action_new_players(self, player, values, **kwargs):
         if self.child:
             return
@@ -152,6 +152,7 @@ class WhiteListView(ManualListView):
         await self.child.destroy()
         await self.app.show_whitelist_window(player)
         self.child = None
+
 
 class WhiteListWidget(TemplateView):
     template_name = 'whitelist/whitelist.xml'
@@ -168,6 +169,7 @@ class WhiteListWidget(TemplateView):
     async def action_open_wl_view(self, player, *args, **kwargs):
         return await self.app.instance.command_manager.execute(player, '//whitelist')
 
+
 class NewPlayersView(TemplateView):
     """
     View to add new logins.
@@ -183,7 +185,6 @@ class NewPlayersView(TemplateView):
         :param app: app instance.
         :type parent: pyplanet.view.base.View
         :type player: pyplanet.apps.core.maniaplanet.models.player.Player
-        :type folder_manager: pyplanet.apps.contrib.jukebox.folders.FolderManager
         """
         super().__init__(parent.manager)
 
