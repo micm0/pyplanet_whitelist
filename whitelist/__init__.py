@@ -23,7 +23,7 @@ class Whitelist(AppConfig):
 
         self.setting_chat_announce = Setting(
             'whitelist_chat_announce', 'Whitelist chat announces', Setting.CAT_BEHAVIOUR,
-            type=bool, description='', default=False
+            type=bool, description='', default=True
         )
 
         self.setting_admin_widget = Setting(
